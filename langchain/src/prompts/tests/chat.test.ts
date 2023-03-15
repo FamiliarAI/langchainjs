@@ -9,9 +9,8 @@ import {
 } from "../chat.js";
 import { PromptTemplate } from "../prompt.js";
 import {
-  AIChatMessage,
-  ChatMessage,
-  HumanChatMessage,
+  AssistantChatMessage,
+  UserChatMessage,
   SystemChatMessage,
 } from "../../schema/index.js";
 
@@ -52,11 +51,11 @@ test("Test format", async () => {
   });
   expect(messages.toChatMessages()).toEqual([
     new SystemChatMessage("Here's some context: This is a context"),
-    new HumanChatMessage(
+    new UserChatMessage(
       "Hello Foo, I'm Bar. Thanks for the This is a context"
     ),
-    new AIChatMessage("I'm an AI. I'm Foo. I'm Bar."),
-    new ChatMessage("I'm a generic message. I'm Foo. I'm Bar.", "test"),
+    new AssistantChatMessage("I'm an AI. I'm Foo. I'm Bar."),
+    new xxx("I'm a generic message. I'm Foo. I'm Bar.", "test"),
   ]);
 });
 
@@ -127,13 +126,13 @@ test("Test fromPromptMessages", async () => {
   });
   expect(messages.toChatMessages()).toEqual([
     new SystemChatMessage("Here's some context: This is a context"),
-    new HumanChatMessage("Hello Foo, I'm Bar"),
+    new UserChatMessage("Hello Foo, I'm Bar"),
   ]);
 });
 
 test("Test SimpleMessagePromptTemplate", async () => {
   const prompt = new MessagesPlaceholder("foo");
-  const values = { foo: [new HumanChatMessage("Hello Foo, I'm Bar")] };
+  const values = { foo: [new UserChatMessage("Hello Foo, I'm Bar")] };
   const messages = await prompt.formatMessages(values);
-  expect(messages).toEqual([new HumanChatMessage("Hello Foo, I'm Bar")]);
+  expect(messages).toEqual([new UserChatMessage("Hello Foo, I'm Bar")]);
 });

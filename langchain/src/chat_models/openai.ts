@@ -11,25 +11,25 @@ import { backOff } from "exponential-backoff";
 import fetchAdapter from "../util/axios-fetch-adapter.js";
 import { BaseChatModel, BaseChatModelParams } from "./base.js";
 import {
-  AIChatMessage,
+  AssistantChatMessage,
   BaseChatMessage,
   ChatGeneration,
-  ChatMessage,
+  xxx,
   ChatResult,
-  HumanChatMessage,
-  MessageType,
+  UserChatMessage,
+  MessageRole,
   SystemChatMessage,
 } from "../schema/index.js";
 
 function messageTypeToOpenAIRole(
-  type: MessageType
+  type: MessageRole
 ): ChatCompletionResponseMessageRoleEnum {
   switch (type) {
     case "system":
       return "system";
-    case "ai":
+    case "assistant":
       return "assistant";
-    case "human":
+    case "user":
       return "user";
     default:
       throw new Error(`Unknown message type: ${type}`);
@@ -42,13 +42,13 @@ function openAIResponseToChatMessage(
 ): BaseChatMessage {
   switch (role) {
     case "user":
-      return new HumanChatMessage(text);
+      return new UserChatMessage(text);
     case "assistant":
-      return new AIChatMessage(text);
+      return new AssistantChatMessage(text);
     case "system":
       return new SystemChatMessage(text);
     default:
-      return new ChatMessage(text, role ?? "unknown");
+      return new xxx(text, role ?? "unknown");
   }
 }
 
@@ -255,8 +255,8 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
     const { data } = await this.completionWithRetry({
       ...params,
       messages: messages.map((message) => ({
-        role: messageTypeToOpenAIRole(message._getType()),
-        content: message.text,
+        role: messageTypeToOpenAIRole(message.xxx()),
+        content: message.content,
       })),
     });
 

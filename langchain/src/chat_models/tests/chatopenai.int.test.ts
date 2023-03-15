@@ -1,6 +1,6 @@
 import { test, expect } from "@jest/globals";
 import { ChatOpenAI } from "../openai.js";
-import { HumanChatMessage, SystemChatMessage } from "../../schema/index.js";
+import { UserChatMessage, SystemChatMessage } from "../../schema/index.js";
 import { ChatPromptValue } from "../../prompts/chat.js";
 import {
   PromptTemplate,
@@ -12,7 +12,7 @@ import { CallbackManager } from "../../callbacks/index.js";
 
 test("Test ChatOpenAI", async () => {
   const chat = new ChatOpenAI({ modelName: "gpt-3.5-turbo", maxTokens: 10 });
-  const message = new HumanChatMessage("Hello!");
+  const message = new UserChatMessage("Hello!");
   const res = await chat.call([message]);
   console.log({ res });
 });
@@ -20,7 +20,7 @@ test("Test ChatOpenAI", async () => {
 test("Test ChatOpenAI with SystemChatMessage", async () => {
   const chat = new ChatOpenAI({ modelName: "gpt-3.5-turbo", maxTokens: 10 });
   const system_message = new SystemChatMessage("You are to chat with a user.");
-  const message = new HumanChatMessage("Hello!");
+  const message = new UserChatMessage("Hello!");
   const res = await chat.call([system_message, message]);
   console.log({ res });
 });
@@ -31,7 +31,7 @@ test("Test ChatOpenAI Generate", async () => {
     maxTokens: 10,
     n: 2,
   });
-  const message = new HumanChatMessage("Hello!");
+  const message = new UserChatMessage("Hello!");
   const res = await chat.generate([[message], [message]]);
   expect(res.generations.length).toBe(2);
   for (const generation of res.generations) {
@@ -57,12 +57,12 @@ test("Test ChatOpenAI in streaming mode", async () => {
       },
     }),
   });
-  const message = new HumanChatMessage("Hello!");
+  const message = new UserChatMessage("Hello!");
   const res = await model.call([message]);
   console.log({ res });
 
   expect(nrNewTokens > 0).toBe(true);
-  expect(res.text).toBe(streamedCompletion);
+  expect(res.content).toBe(streamedCompletion);
 });
 
 test("Test ChatOpenAI prompt value", async () => {
@@ -71,7 +71,7 @@ test("Test ChatOpenAI prompt value", async () => {
     maxTokens: 10,
     n: 2,
   });
-  const message = new HumanChatMessage("Hello!");
+  const message = new UserChatMessage("Hello!");
   const res = await chat.generatePrompt([new ChatPromptValue([message])]);
   expect(res.generations.length).toBe(1);
   for (const generation of res.generations) {

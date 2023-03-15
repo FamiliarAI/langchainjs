@@ -28,50 +28,44 @@ export type LLMResult = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   llmOutput?: Record<string, any>;
 };
-export type MessageType = "human" | "ai" | "generic" | "system";
+export type MessageRole = "user" | "assistant" | "system";
 
 export abstract class BaseChatMessage {
-  /** The text of the message. */
-  text: string;
+   /** The content of the message. */
+   content: string;
 
-  /** The type of the message. */
-  abstract _getType(): MessageType;
+   /** The role of the message. */
+   role: MessageRole;
+ 
+   /** Optional name string. */
+   name?: string;
+ 
+   constructor(content: string, role: MessageRole, name?: string) {
+     this.content = content;
+     this.role = role;
+     this.name = name;
+   }
+}
 
-  constructor(text: string) {
-    this.text = text;
+export class UserChatMessage extends BaseChatMessage {
+  constructor(content: string, name?: string) {
+    super(content, "user", name);
   }
 }
 
-export class HumanChatMessage extends BaseChatMessage {
-  _getType(): MessageType {
-    return "human";
+export class AssistantChatMessage extends BaseChatMessage {
+  constructor(content: string, name?: string) {
+    super(content, "assistant", name);
   }
 }
 
-export class AIChatMessage extends BaseChatMessage {
-  _getType(): MessageType {
-    return "ai";
-  }
-}
 
 export class SystemChatMessage extends BaseChatMessage {
-  _getType(): MessageType {
-    return "system";
+  constructor(content: string, name?: string) {
+    super(content, "system", name);
   }
 }
 
-export class ChatMessage extends BaseChatMessage {
-  role: string;
-
-  constructor(text: string, role: string) {
-    super(text);
-    this.role = role;
-  }
-
-  _getType(): MessageType {
-    return "generic";
-  }
-}
 
 export interface ChatGeneration extends Generation {
   message: BaseChatMessage;

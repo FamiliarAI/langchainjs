@@ -1,9 +1,9 @@
 import {
   BaseChatMessage,
-  HumanChatMessage,
-  AIChatMessage,
+  UserChatMessage,
+  AssistantChatMessage,
   SystemChatMessage,
-  ChatMessage,
+  xxx,
 } from "../schema/index.js";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InputValues = Record<string, any>;
@@ -42,18 +42,18 @@ export function getBufferString(
   const string_messages: string[] = [];
   for (const m of messages) {
     let role: string;
-    if (m instanceof HumanChatMessage) {
+    if (m instanceof UserChatMessage) {
       role = human_prefix;
-    } else if (m instanceof AIChatMessage) {
+    } else if (m instanceof AssistantChatMessage) {
       role = ai_prefix;
     } else if (m instanceof SystemChatMessage) {
       role = "System";
-    } else if (m instanceof ChatMessage) {
+    } else if (m instanceof xxx) {
       role = m.role;
     } else {
       throw new Error(`Got unsupported message type: ${m}`);
     }
-    string_messages.push(`${role}: ${m.text}`);
+    string_messages.push(`${role}: ${m.content}`);
   }
   return string_messages.join("\n");
 }

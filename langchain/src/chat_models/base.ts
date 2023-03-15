@@ -1,6 +1,6 @@
 import GPT3Tokenizer from "gpt3-tokenizer";
 import {
-  AIChatMessage,
+  AssistantChatMessage,
   BaseChatMessage,
   BasePromptValue,
   ChatGeneration,
@@ -136,11 +136,11 @@ export abstract class SimpleChatModel extends BaseChatModel {
     stop?: string[]
   ): Promise<ChatResult> {
     const text = await this._call(messages, stop);
-    const message = new AIChatMessage(text);
+    const message = new AssistantChatMessage(text);
     return {
       generations: [
         {
-          text: message.text,
+          text: message.content,
           message,
         },
       ],

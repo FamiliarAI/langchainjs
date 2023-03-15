@@ -1,6 +1,6 @@
 import { test, expect } from "@jest/globals";
 import { BufferWindowMemory } from "../buffer_window_memory.js";
-import { HumanChatMessage, AIChatMessage } from "../../schema/index.js";
+import { UserChatMessage, AssistantChatMessage } from "../../schema/index.js";
 
 test("Test buffer memory", async () => {
   const memory = new BufferWindowMemory({ k: 1 });
@@ -25,16 +25,16 @@ test("Test buffer memory return messages", async () => {
 
   await memory.saveContext({ foo: "bar" }, { bar: "foo" });
   const expectedResult = [
-    new HumanChatMessage("bar"),
-    new AIChatMessage("foo"),
+    new UserChatMessage("bar"),
+    new AssistantChatMessage("foo"),
   ];
   const result2 = await memory.loadMemoryVariables({});
   expect(result2).toStrictEqual({ history: expectedResult });
 
   await memory.saveContext({ foo: "bar1" }, { bar: "foo" });
   const expectedResult2 = [
-    new HumanChatMessage("bar1"),
-    new AIChatMessage("foo"),
+    new UserChatMessage("bar1"),
+    new AssistantChatMessage("foo"),
   ];
   const result3 = await memory.loadMemoryVariables({});
   expect(result3).toStrictEqual({ history: expectedResult2 });

@@ -23,8 +23,8 @@ import { BaseLanguageModel } from "../../base_language/index.js";
 import {
   AgentStep,
   BaseChatMessage,
-  AIChatMessage,
-  HumanChatMessage,
+  AssistantChatMessage,
+  UserChatMessage,
 } from "../../schema/index.js";
 import {
   BaseOutputParser,
@@ -114,9 +114,9 @@ export class ChatConversationalAgent extends Agent {
   constructScratchPad(steps: AgentStep[]): BaseChatMessage[] {
     const thoughts: BaseChatMessage[] = [];
     for (const step of steps) {
-      thoughts.push(new AIChatMessage(step.action.log));
+      thoughts.push(new AssistantChatMessage(step.action.log));
       thoughts.push(
-        new HumanChatMessage(
+        new UserChatMessage(
           interpolateFString(TEMPLATE_TOOL_RESPONSE, {
             observation: step.observation,
           })

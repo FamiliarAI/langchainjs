@@ -8,11 +8,10 @@ import {
 import { DEFAULT_FORMATTER_MAPPING, TemplateFormat } from "./template.js";
 import { SerializedOutputParser } from "../output_parsers/index.js";
 import {
-  AIChatMessage,
+  AssistantChatMessage,
   BaseChatMessage,
   BasePromptValue,
-  ChatMessage,
-  HumanChatMessage,
+  UserChatMessage,
   SystemChatMessage,
 } from "../schema/index.js";
 import { PromptTemplate } from "./prompt.js";
@@ -72,7 +71,7 @@ export class ChatMessagePromptTemplate extends BaseMessageStringPromptTemplate {
   role: string;
 
   async format(values: InputValues): Promise<BaseChatMessage> {
-    return new ChatMessage(await this.prompt.format(values), this.role);
+    return new xxx(await this.prompt.format(values), this.role);
   }
 
   constructor(prompt: BaseStringPromptTemplate, role: string) {
@@ -87,7 +86,7 @@ export class ChatMessagePromptTemplate extends BaseMessageStringPromptTemplate {
 
 export class HumanMessagePromptTemplate extends BaseMessageStringPromptTemplate {
   async format(values: InputValues): Promise<BaseChatMessage> {
-    return new HumanChatMessage(await this.prompt.format(values));
+    return new UserChatMessage(await this.prompt.format(values));
   }
 
   constructor(prompt: BaseStringPromptTemplate) {
@@ -101,7 +100,7 @@ export class HumanMessagePromptTemplate extends BaseMessageStringPromptTemplate 
 
 export class AIMessagePromptTemplate extends BaseMessageStringPromptTemplate {
   async format(values: InputValues): Promise<BaseChatMessage> {
-    return new AIChatMessage(await this.prompt.format(values));
+    return new AssistantChatMessage(await this.prompt.format(values));
   }
 
   constructor(prompt: BaseStringPromptTemplate) {
