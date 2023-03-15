@@ -2,14 +2,11 @@ import {
   BaseChatMessage,
   UserChatMessage,
   AssistantChatMessage,
-  SystemChatMessage,
-  xxx,
-} from "../schema/index.js";
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+  SystemChatMessage
+} from '../schema/index';
+
 export type InputValues = Record<string, any>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type OutputValues = Record<string, any>;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type MemoryVariables = Record<string, any>;
 
 export abstract class BaseMemory {
@@ -36,8 +33,8 @@ export const getInputValue = (inputValues: InputValues, inputKey?: string) => {
 
 export function getBufferString(
   messages: BaseChatMessage[],
-  human_prefix = "Human",
-  ai_prefix = "AI"
+  human_prefix = 'Human',
+  ai_prefix = 'AI'
 ): string {
   const string_messages: string[] = [];
   for (const m of messages) {
@@ -47,13 +44,11 @@ export function getBufferString(
     } else if (m instanceof AssistantChatMessage) {
       role = ai_prefix;
     } else if (m instanceof SystemChatMessage) {
-      role = "System";
-    } else if (m instanceof xxx) {
-      role = m.role;
+      role = 'System';
     } else {
       throw new Error(`Got unsupported message type: ${m}`);
     }
     string_messages.push(`${role}: ${m.content}`);
   }
-  return string_messages.join("\n");
+  return string_messages.join('\n');
 }

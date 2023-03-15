@@ -1,5 +1,5 @@
-import { BasePromptValue, LLMResult } from "../schema/index.js";
-import { CallbackManager, getCallbackManager } from "../callbacks/index.js";
+import { BasePromptValue, LLMResult } from '../schema/index';
+import { CallbackManager, getCallbackManager } from '../callbacks/index';
 
 const getVerbosity = () => false;
 

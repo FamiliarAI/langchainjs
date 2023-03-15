@@ -1,6 +1,6 @@
-import { BasePromptTemplate } from "./index.js";
-import { loadFromHub } from "../util/hub.js";
-import { parseFileConfig, FileLoader, loadFromFile } from "../util/index.js";
+// langchain/src/prompts/load.ts
+import { BasePromptTemplate } from './index';
+import { parseFileConfig, FileLoader, loadFromFile } from '../util/index';
 
 const loadPromptFromFile: FileLoader<BasePromptTemplate> = (text, path) =>
   BasePromptTemplate.deserialize(parseFileConfig(text, path));
@@ -22,16 +22,16 @@ const loadPromptFromFile: FileLoader<BasePromptTemplate> = (text, path) =>
  * const prompt = await loadPrompt("/path/to/prompt.json");
  * ```
  */
-export const loadPrompt = async (uri: string): Promise<BasePromptTemplate> => {
-  const hubResult = await loadFromHub(
-    uri,
-    loadPromptFromFile,
-    "prompts",
-    new Set(["py", "json", "yaml"])
-  );
-  if (hubResult) {
-    return hubResult;
-  }
+export const loadPrompt = async (uri: string): Promise<BasePromptTemplate> => 
+  //   const hubResult = await loadFromHub(
+  //     uri,
+  //     loadPromptFromFile,
+  //     'prompts',
+  //     new Set(['py', 'json', 'yaml'])
+  //   );
+  //   if (hubResult) {
+  //     return hubResult;
+  //   }
 
-  return loadFromFile(uri, loadPromptFromFile);
-};
+   loadFromFile(uri, loadPromptFromFile)
+;

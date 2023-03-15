@@ -4,26 +4,22 @@ import {
   BasePromptTemplateInput,
   PartialValues,
   Example,
-  BaseExampleSelector,
-} from "./index.js";
-import {
-  TemplateFormat,
-  checkValidTemplate,
-  renderTemplate,
-} from "./template.js";
+  BaseExampleSelector
+} from './index';
+import { TemplateFormat, checkValidTemplate, renderTemplate } from './template';
 import {
   resolveTemplateFromFile,
   resolveConfigFromFile,
-  parseFileConfig,
-} from "../util/index.js";
-import { PromptTemplate, SerializedPromptTemplate } from "./prompt.js";
+  parseFileConfig
+} from '../util/index';
+import { PromptTemplate, SerializedPromptTemplate } from './prompt';
 import {
   SerializedOutputParser,
-  BaseOutputParser,
-} from "../output_parsers/index.js";
+  BaseOutputParser
+} from '../output_parsers/index';
 
 export type SerializedFewShotTemplate = {
-  _type: "few_shot";
+  _type: 'few_shot';
   input_variables: string[];
   output_parser?: SerializedOutputParser;
   examples: string | Example[];
@@ -98,15 +94,18 @@ export class FewShotPromptTemplate
 
   exampleSelector?: BaseExampleSelector | undefined;
 
-  examplePrompt: PromptTemplate;
+  examplePrompt: PromptTemplate = new PromptTemplate({
+    inputVariables: [],
+    template: ''
+  });
 
-  suffix = "";
+  suffix = '';
 
-  exampleSeparator = "\n\n";
+  exampleSeparator = '\n\n';
 
-  prefix = "";
+  prefix = '';
 
-  templateFormat: TemplateFormat = "f-string";
+  templateFormat: TemplateFormat = 'f-string';
 
   validateTemplate = true;
 
@@ -141,8 +140,8 @@ export class FewShotPromptTemplate
     }
   }
 
-  _getPromptType(): "few_shot" {
-    return "few_shot";
+  _getPromptType(): 'few_shot' {
+    return 'few_shot';
   }
 
   private async getExamples(
@@ -163,11 +162,11 @@ export class FewShotPromptTemplate
   async partial(values: PartialValues): Promise<FewShotPromptTemplate> {
     const promptDict: FewShotPromptTemplate = { ...this };
     promptDict.inputVariables = this.inputVariables.filter(
-      (iv) => !(iv in values)
+      iv => !(iv in values)
     );
     promptDict.partialVariables = {
       ...(this.partialVariables ?? {}),
-      ...values,
+      ...values
     };
     return new FewShotPromptTemplate(promptDict);
   }
@@ -177,7 +176,7 @@ export class FewShotPromptTemplate
     const examples = await this.getExamples(allValues);
 
     const exampleStrings = await Promise.all(
-      examples.map((example) => this.examplePrompt.format(example))
+      examples.map(example => this.examplePrompt.format(example))
     );
     const template = [this.prefix, ...exampleStrings, this.suffix].join(
       this.exampleSeparator
@@ -188,7 +187,7 @@ export class FewShotPromptTemplate
   serialize(): SerializedFewShotTemplate {
     if (this.exampleSelector || !this.examples) {
       throw new Error(
-        "Serializing an example selector is not currently supported"
+        'Serializing an example selector is not currently supported'
       );
     }
     return {
@@ -200,7 +199,7 @@ export class FewShotPromptTemplate
       suffix: this.suffix,
       prefix: this.prefix,
       template_format: this.templateFormat,
-      examples: this.examples,
+      examples: this.examples
     };
   }
 
@@ -208,24 +207,24 @@ export class FewShotPromptTemplate
     data: SerializedFewShotTemplate
   ): Promise<FewShotPromptTemplate> {
     const serializedPrompt = await resolveConfigFromFile<
-      "example_prompt",
+      'example_prompt',
       SerializedPromptTemplate
-    >("example_prompt", data);
+    >('example_prompt', data);
     const examplePrompt = await PromptTemplate.deserialize(serializedPrompt);
 
     let examples: Example[];
 
-    if (typeof data.examples === "string") {
-      examples = await parseFileConfig(data.examples, ".json", [
-        ".json",
-        ".yml",
-        ".yaml",
+    if (typeof data.examples === 'string') {
+      examples = await parseFileConfig(data.examples, '.json', [
+        '.json',
+        '.yml',
+        '.yaml'
       ]);
     } else if (Array.isArray(data.examples)) {
       examples = data.examples;
     } else {
       throw new Error(
-        "Invalid examples format. Only list or string are supported."
+        'Invalid examples format. Only list or string are supported.'
       );
     }
 
@@ -237,9 +236,9 @@ export class FewShotPromptTemplate
       examplePrompt,
       examples,
       exampleSeparator: data.example_separator,
-      prefix: await resolveTemplateFromFile("prefix", data),
-      suffix: await resolveTemplateFromFile("suffix", data),
-      templateFormat: data.template_format,
+      prefix: await resolveTemplateFromFile('prefix', data),
+      suffix: await resolveTemplateFromFile('suffix', data),
+      templateFormat: data.template_format
     });
   }
 }

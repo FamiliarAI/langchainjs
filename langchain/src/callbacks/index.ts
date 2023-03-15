@@ -1,9 +1,9 @@
 export {
   CallbackManager,
   ConsoleCallbackHandler,
-  BaseCallbackHandler,
-} from "./base.js";
+  BaseCallbackHandler
+} from './base';
 
-export { LangChainTracer } from "./tracers.js";
+export { LangChainTracer } from './tracers';
 
-export { getCallbackManager, setTracerSession } from "./utils.js";
+export { getCallbackManager, setTracerSession } from './utils';

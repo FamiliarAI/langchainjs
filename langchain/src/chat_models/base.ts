@@ -1,22 +1,22 @@
-import GPT3Tokenizer from "gpt3-tokenizer";
+// langchain/src/chat_models/base.ts
+import * as GPT3Tokenizer from 'gpt3-tokenizer';
 import {
   AssistantChatMessage,
   BaseChatMessage,
   BasePromptValue,
   ChatGeneration,
   ChatResult,
-  LLMResult,
-} from "../schema/index.js";
+  LLMResult
+} from '../schema/index';
 import {
   BaseLanguageModel,
-  BaseLanguageModelParams,
-} from "../base_language/index.js";
-import { getBufferString } from "../memory/base.js";
+  BaseLanguageModelParams
+} from '../base_language/index';
+import { getBufferString } from '../memory/base';
 
 export type SerializedChatModel = {
   _model: string;
   _type: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
 } & Record<string, any>;
 
 export type BaseChatModelParams = BaseLanguageModelParams;
@@ -31,7 +31,7 @@ export abstract class BaseChatModel extends BaseLanguageModel {
     stop?: string[]
   ): Promise<LLMResult> {
     const generations: ChatGeneration[][] = [];
-    const messageStrings: string[] = messages.map((messageList) =>
+    const messageStrings: string[] = messages.map(messageList =>
       getBufferString(messageList)
     );
     await this.callbackManager.handleLLMStart(
@@ -49,7 +49,7 @@ export abstract class BaseChatModel extends BaseLanguageModel {
       throw err;
     }
     const output: LLMResult = {
-      generations,
+      generations
     };
     await this.callbackManager.handleLLMEnd(output, this.verbose);
     return output;
@@ -58,13 +58,12 @@ export abstract class BaseChatModel extends BaseLanguageModel {
   /**
    * Get the identifying parameters of the LLM.
    */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   _identifyingParams(): Record<string, any> {
     return {};
   }
 
   _modelType(): string {
-    return "base_chat_model" as const;
+    return 'base_chat_model' as const;
   }
 
   abstract _llmType(): string;
@@ -76,7 +75,7 @@ export abstract class BaseChatModel extends BaseLanguageModel {
     return {
       ...this._identifyingParams(),
       _type: this._llmType(),
-      _model: this._modelType(),
+      _model: this._modelType()
     };
   }
 
@@ -90,7 +89,7 @@ export abstract class BaseChatModel extends BaseLanguageModel {
     // TODO: this method may differ based on model (eg codex, gpt-3.5).
     if (this._tokenizer === undefined) {
       const Constructor = GPT3Tokenizer.default;
-      this._tokenizer = new Constructor({ type: "gpt3" });
+      this._tokenizer = new Constructor({ type: 'gpt3' });
     }
     return this._tokenizer.encode(text).bpe.length;
   }
@@ -99,8 +98,8 @@ export abstract class BaseChatModel extends BaseLanguageModel {
     promptValues: BasePromptValue[],
     stop?: string[]
   ): Promise<LLMResult> {
-    const promptMessages: BaseChatMessage[][] = promptValues.map(
-      (promptValue) => promptValue.toChatMessages()
+    const promptMessages: BaseChatMessage[][] = promptValues.map(promptValue =>
+      promptValue.toChatMessages()
     );
     return this.generate(promptMessages, stop);
   }
@@ -141,9 +140,9 @@ export abstract class SimpleChatModel extends BaseChatModel {
       generations: [
         {
           text: message.content,
-          message,
-        },
-      ],
+          message
+        }
+      ]
     };
   }
 }

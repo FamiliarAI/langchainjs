@@ -1,40 +1,40 @@
-import { test, expect } from "@jest/globals";
-import { BufferWindowMemory } from "../buffer_window_memory.js";
-import { UserChatMessage, AssistantChatMessage } from "../../schema/index.js";
+import { test, expect } from '@jest/globals';
+import { BufferWindowMemory } from '../buffer_window_memory';
+import { UserChatMessage, AssistantChatMessage } from '../../schema/index';
 
-test("Test buffer memory", async () => {
+test('Test buffer memory', async () => {
   const memory = new BufferWindowMemory({ k: 1 });
   const result1 = await memory.loadMemoryVariables({});
-  expect(result1).toStrictEqual({ history: "" });
+  expect(result1).toStrictEqual({ history: '' });
 
-  await memory.saveContext({ foo: "bar" }, { bar: "foo" });
-  const expectedString = "Human: bar\nAI: foo";
+  await memory.saveContext({ foo: 'bar' }, { bar: 'foo' });
+  const expectedString = 'Human: bar\nAI: foo';
   const result2 = await memory.loadMemoryVariables({});
   expect(result2).toStrictEqual({ history: expectedString });
 
-  await memory.saveContext({ foo: "bar1" }, { bar: "foo" });
-  const expectedString3 = "Human: bar1\nAI: foo";
+  await memory.saveContext({ foo: 'bar1' }, { bar: 'foo' });
+  const expectedString3 = 'Human: bar1\nAI: foo';
   const result3 = await memory.loadMemoryVariables({});
   expect(result3).toStrictEqual({ history: expectedString3 });
 });
 
-test("Test buffer memory return messages", async () => {
+test('Test buffer memory return messages', async () => {
   const memory = new BufferWindowMemory({ k: 1, returnMessages: true });
   const result1 = await memory.loadMemoryVariables({});
   expect(result1).toStrictEqual({ history: [] });
 
-  await memory.saveContext({ foo: "bar" }, { bar: "foo" });
+  await memory.saveContext({ foo: 'bar' }, { bar: 'foo' });
   const expectedResult = [
-    new UserChatMessage("bar"),
-    new AssistantChatMessage("foo"),
+    new UserChatMessage('bar'),
+    new AssistantChatMessage('foo')
   ];
   const result2 = await memory.loadMemoryVariables({});
   expect(result2).toStrictEqual({ history: expectedResult });
 
-  await memory.saveContext({ foo: "bar1" }, { bar: "foo" });
+  await memory.saveContext({ foo: 'bar1' }, { bar: 'foo' });
   const expectedResult2 = [
-    new UserChatMessage("bar1"),
-    new AssistantChatMessage("foo"),
+    new UserChatMessage('bar1'),
+    new AssistantChatMessage('foo')
   ];
   const result3 = await memory.loadMemoryVariables({});
   expect(result3).toStrictEqual({ history: expectedResult2 });

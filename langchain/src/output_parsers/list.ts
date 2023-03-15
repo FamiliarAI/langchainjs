@@ -1,7 +1,7 @@
-import { BaseOutputParser } from "./base.js";
+import { BaseOutputParser } from './base';
 
 export type SerializedCommaSeparatedListOutputParser = {
-  _type: "comma_separated_list";
+  _type: 'comma_separated_list';
 };
 /**
  * Class to parse the output of an LLM call to a list.
@@ -19,8 +19,8 @@ export class CommaSeparatedListOutputParser extends ListOutputParser {
   parse(text: string): string[] {
     return text
       .trim()
-      .split(",")
-      .map((s) => s.trim());
+      .split(',')
+      .map(s => s.trim());
   }
 
   getFormatInstructions(): string {
@@ -29,7 +29,7 @@ export class CommaSeparatedListOutputParser extends ListOutputParser {
 
   serialize(): SerializedCommaSeparatedListOutputParser {
     return {
-      _type: "comma_separated_list",
+      _type: 'comma_separated_list'
     };
   }
 

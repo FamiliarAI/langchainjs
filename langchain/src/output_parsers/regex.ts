@@ -1,7 +1,7 @@
-import { BaseOutputParser } from "./base.js";
+import { BaseOutputParser } from './base';
 
 export type SerializedRegexParser = {
-  _type: "regex_parser";
+  _type: 'regex_parser';
   regex: string;
   output_keys: string[];
   default_output_key?: string;
@@ -30,7 +30,7 @@ export class RegexParser extends BaseOutputParser {
   }
 
   _type() {
-    return "regex_parser";
+    return 'regex_parser';
   }
 
   parse(text: string): Record<string, string> {
@@ -47,7 +47,7 @@ export class RegexParser extends BaseOutputParser {
     }
 
     return this.outputKeys.reduce((acc, key) => {
-      acc[key] = key === this.defaultOutputKey ? text : "";
+      acc[key] = key === this.defaultOutputKey ? text : '';
       return acc;
     }, {} as Record<string, string>);
   }
@@ -58,10 +58,10 @@ export class RegexParser extends BaseOutputParser {
 
   serialize() {
     return {
-      _type: "regex_parser" as const,
-      regex: typeof this.regex === "string" ? this.regex : this.regex.source,
+      _type: 'regex_parser' as const,
+      regex: typeof this.regex === 'string' ? this.regex : this.regex.source,
       output_keys: this.outputKeys,
-      default_output_key: this.defaultOutputKey,
+      default_output_key: this.defaultOutputKey
     };
   }
 

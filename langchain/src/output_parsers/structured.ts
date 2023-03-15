@@ -1,16 +1,16 @@
 /* eslint-disable no-else-return */
-import { z } from "zod";
+import { z } from 'zod';
 
-import { BaseOutputParser, SerializedOutputParser } from "./base.js";
+import { BaseOutputParser, SerializedOutputParser } from './base';
 
 function printSchema(schema: z.ZodTypeAny, depth = 0): string {
   if (schema instanceof z.ZodString) {
-    return "string";
+    return 'string';
   } else if (schema instanceof z.ZodArray) {
     return `${printSchema(schema._def.type, depth)}[]`;
   } else if (schema instanceof z.ZodObject) {
-    const indent = "\t".repeat(depth);
-    const indentIn = "\t".repeat(depth + 1);
+    const indent = '\t'.repeat(depth);
+    const indentIn = '\t'.repeat(depth + 1);
     return `{
 ${Object.entries(schema.shape)
   .map(
@@ -19,9 +19,9 @@ ${Object.entries(schema.shape)
       `${indentIn}"${key}": ${printSchema(value as z.ZodTypeAny, depth + 1)}` +
       ((value as z.ZodTypeAny)._def.description
         ? ` // ${(value as z.ZodTypeAny)._def.description}`
-        : "")
+        : '')
   )
-  .join("\n")}
+  .join('\n')}
 ${indent}}`;
   } else {
     throw new Error(`Unsupported type: ${schema}`);
@@ -64,11 +64,11 @@ ${printSchema(this.schema)}
   }
 
   parse(text: string): z.infer<T> {
-    const json = text.trim().split("```json")[1].split("```")[0].trim();
+    const json = text.trim().split('```json')[1].split('```')[0].trim();
     return this.schema.parse(JSON.parse(json));
   }
 
   serialize(): SerializedOutputParser {
-    throw new Error("Not implemented");
+    throw new Error('Not implemented');
   }
 }

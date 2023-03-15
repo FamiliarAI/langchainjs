@@ -11,7 +11,10 @@
  * module without setting the "type" field in package.json.
  */
 
-import axios from "axios";
+import axios from 'axios';
+
+// polyfill for fetch on node
+import 'whatwg-fetch';
 
 /**
  * In order to avoid import issues with axios 1.x, copying here the internal
@@ -47,19 +50,19 @@ function isAbsoluteURL(url) {
 // Copied from axios/lib/helpers/combineURLs.js
 function combineURLs(baseURL, relativeURL) {
   return relativeURL
-    ? baseURL.replace(/\/+$/, "") + "/" + relativeURL.replace(/^\/+/, "")
+    ? baseURL.replace(/\/+$/, '') + '/' + relativeURL.replace(/^\/+/, '')
     : baseURL;
 }
 
 // Copied from axios/lib/helpers/buildURL.js
 function encode(val) {
   return encodeURIComponent(val)
-    .replace(/%3A/gi, ":")
-    .replace(/%24/g, "$")
-    .replace(/%2C/gi, ",")
-    .replace(/%20/g, "+")
-    .replace(/%5B/gi, "[")
-    .replace(/%5D/gi, "]");
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+')
+    .replace(/%5B/gi, '[')
+    .replace(/%5D/gi, ']');
 }
 
 function buildURL(url, params, paramsSerializer) {
@@ -76,7 +79,7 @@ function buildURL(url, params, paramsSerializer) {
     var parts = [];
 
     forEach(params, function serialize(val, key) {
-      if (val === null || typeof val === "undefined") {
+      if (val === null || typeof val === 'undefined') {
         return;
       }
 
@@ -96,16 +99,16 @@ function buildURL(url, params, paramsSerializer) {
       });
     });
 
-    serializedParams = parts.join("&");
+    serializedParams = parts.join('&');
   }
 
   if (serializedParams) {
-    var hashmarkIndex = url.indexOf("#");
+    var hashmarkIndex = url.indexOf('#');
     if (hashmarkIndex !== -1) {
       url = url.slice(0, hashmarkIndex);
     }
 
-    url += (url.indexOf("?") === -1 ? "?" : "&") + serializedParams;
+    url += (url.indexOf('?') === -1 ? '?' : '&') + serializedParams;
   }
 
   return url;
@@ -121,19 +124,19 @@ function buildFullPath(baseURL, requestedURL) {
 
 // Copied from axios/lib/utils.js
 function isUndefined(val) {
-  return typeof val === "undefined";
+  return typeof val === 'undefined';
 }
 
 function isObject(val) {
-  return val !== null && typeof val === "object";
+  return val !== null && typeof val === 'object';
 }
 
 function isDate(val) {
-  return toString.call(val) === "[object Date]";
+  return toString.call(val) === '[object Date]';
 }
 
 function isURLSearchParams(val) {
-  return toString.call(val) === "[object URLSearchParams]";
+  return toString.call(val) === '[object URLSearchParams]';
 }
 
 function isArray(val) {
@@ -142,12 +145,12 @@ function isArray(val) {
 
 function forEach(obj, fn) {
   // Don't bother if no value provided
-  if (obj === null || typeof obj === "undefined") {
+  if (obj === null || typeof obj === 'undefined') {
     return;
   }
 
   // Force an array if not already something iterable
-  if (typeof obj !== "object") {
+  if (typeof obj !== 'object') {
     obj = [obj];
   }
 
@@ -167,24 +170,24 @@ function forEach(obj, fn) {
 }
 
 function isFormData(val) {
-  return toString.call(val) === "[object FormData]";
+  return toString.call(val) === '[object FormData]';
 }
 
 // TODO this needs to be fixed to run in newer browser-like environments
 // https://github.com/vespaiach/axios-fetch-adapter/issues/20#issue-1396365322
 function isStandardBrowserEnv() {
   if (
-    typeof navigator !== "undefined" &&
+    typeof navigator !== 'undefined' &&
     // eslint-disable-next-line no-undef
-    (navigator.product === "ReactNative" ||
+    (navigator.product === 'ReactNative' ||
       // eslint-disable-next-line no-undef
-      navigator.product === "NativeScript" ||
+      navigator.product === 'NativeScript' ||
       // eslint-disable-next-line no-undef
-      navigator.product === "NS")
+      navigator.product === 'NS')
   ) {
     return false;
   }
-  return typeof window !== "undefined" && typeof document !== "undefined";
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
 }
 
 /**
@@ -198,12 +201,12 @@ export default async function fetchAdapter(config) {
 
   if (config.timeout && config.timeout > 0) {
     promiseChain.push(
-      new Promise((res) => {
+      new Promise(res => {
         setTimeout(() => {
           const message = config.timeoutErrorMessage
             ? config.timeoutErrorMessage
             : `timeout of ${config.timeout}ms exceeded`;
-          res(createError(message, config, "ECONNABORTED", request));
+          res(createError(message, config, 'ECONNABORTED', request));
         }, config.timeout);
       })
     );
@@ -215,7 +218,7 @@ export default async function fetchAdapter(config) {
       reject(data);
     } else {
       // eslint-disable-next-line no-unused-expressions
-      Object.prototype.toString.call(config.settle) === "[object Function]"
+      Object.prototype.toString.call(config.settle) === '[object Function]'
         ? config.settle(resolve, reject, data)
         : settle(resolve, reject, data);
     }
@@ -231,7 +234,7 @@ async function getResponse(request, config) {
   try {
     stageOne = await fetch(request);
   } catch (e) {
-    return createError("Network Error", config, "ERR_NETWORK", request);
+    return createError('Network Error', config, 'ERR_NETWORK', request);
   }
 
   const response = {
@@ -240,21 +243,21 @@ async function getResponse(request, config) {
     statusText: stageOne.statusText,
     headers: new Headers(stageOne.headers), // Make a copy of headers
     config,
-    request,
+    request
   };
 
   if (stageOne.status >= 200 && stageOne.status !== 204) {
     switch (config.responseType) {
-      case "arraybuffer":
+      case 'arraybuffer':
         response.data = await stageOne.arrayBuffer();
         break;
-      case "blob":
+      case 'blob':
         response.data = await stageOne.blob();
         break;
-      case "json":
+      case 'json':
         response.data = await stageOne.json();
         break;
-      case "formData":
+      case 'formData':
         response.data = await stageOne.formData();
         break;
       default:
@@ -274,25 +277,25 @@ function createRequest(config) {
 
   // HTTP basic authentication
   if (config.auth) {
-    const username = config.auth.username || "";
+    const username = config.auth.username || '';
     const password = config.auth.password
       ? decodeURI(encodeURIComponent(config.auth.password))
-      : "";
-    headers.set("Authorization", `Basic ${btoa(`${username}:${password}`)}`);
+      : '';
+    headers.set('Authorization', `Basic ${btoa(`${username}:${password}`)}`);
   }
 
   const method = config.method.toUpperCase();
   const options = {
     headers,
-    method,
+    method
   };
-  if (method !== "GET" && method !== "HEAD") {
+  if (method !== 'GET' && method !== 'HEAD') {
     options.body = config.data;
 
     // In these cases the browser will automatically set the correct Content-Type,
     // but only if that header hasn't been set yet. So that's why we're deleting it.
     if (isFormData(options.body) && isStandardBrowserEnv()) {
-      headers.delete("Content-Type");
+      headers.delete('Content-Type');
     }
   }
   if (config.mode) {
@@ -313,7 +316,7 @@ function createRequest(config) {
   // This config is similar to XHR’s withCredentials flag, but with three available values instead of two.
   // So if withCredentials is not set, default value 'same-origin' will be used
   if (!isUndefined(config.withCredentials)) {
-    options.credentials = config.withCredentials ? "include" : "omit";
+    options.credentials = config.withCredentials ? 'include' : 'omit';
   }
 
   const fullPath = buildFullPath(config.baseURL, config.url);
@@ -341,7 +344,7 @@ function createRequest(config) {
  * @returns {Error} The created error.
  */
 function createError(message, config, code, request, response) {
-  if (axios.AxiosError && typeof axios.AxiosError === "function") {
+  if (axios.AxiosError && typeof axios.AxiosError === 'function') {
     return new axios.AxiosError(
       message,
       axios.AxiosError[code],
@@ -398,7 +401,7 @@ function enhanceError(error, config, code, request, response) {
       config: this.config,
       code: this.code,
       status:
-        this.response && this.response.status ? this.response.status : null,
+        this.response && this.response.status ? this.response.status : null
     };
   };
   return error;

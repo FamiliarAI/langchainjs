@@ -1,8 +1,8 @@
-import * as process from "process";
-import { ChainValues, LLMResult } from "../schema/index.js";
-import { BaseCallbackHandler } from "./base.js";
+import * as process from 'process';
+import { ChainValues, LLMResult } from '../schema/index';
+import { BaseCallbackHandler } from './base';
 
-export type RunType = "llm" | "chain" | "tool";
+export type RunType = 'llm' | 'chain' | 'tool';
 
 export interface BaseTracerSession {
   start_time: number;
@@ -75,7 +75,7 @@ export abstract class BaseTracer extends BaseCallbackHandler {
   async newSession(sessionName?: string): Promise<TracerSession> {
     const sessionCreate: TracerSessionCreate = {
       start_time: Date.now(),
-      name: sessionName,
+      name: sessionName
     };
     const session = await this.persistSession(sessionCreate);
     this.session = session;
@@ -86,14 +86,14 @@ export abstract class BaseTracer extends BaseCallbackHandler {
     parentRun: ChainRun | ToolRun,
     childRun: LLMRun | ChainRun | ToolRun
   ) {
-    if (childRun.type === "llm") {
+    if (childRun.type === 'llm') {
       parentRun.child_llm_runs.push(childRun as LLMRun);
-    } else if (childRun.type === "chain") {
+    } else if (childRun.type === 'chain') {
       parentRun.child_chain_runs.push(childRun as ChainRun);
-    } else if (childRun.type === "tool") {
+    } else if (childRun.type === 'tool') {
       parentRun.child_tool_runs.push(childRun as ToolRun);
     } else {
-      throw new Error("Invalid run type");
+      throw new Error('Invalid run type');
     }
   }
 
@@ -103,11 +103,11 @@ export abstract class BaseTracer extends BaseCallbackHandler {
     if (this.stack.length > 0) {
       if (
         !(
-          this.stack.at(-1)?.type === "tool" ||
-          this.stack.at(-1)?.type === "chain"
+          this.stack.at(-1)?.type === 'tool' ||
+          this.stack.at(-1)?.type === 'chain'
         )
       ) {
-        throw new Error("Nested run can only be logged for tool or chain");
+        throw new Error('Nested run can only be logged for tool or chain');
       }
       const parentRun = this.stack.at(-1) as ChainRun | ToolRun;
       this._addChildRun(parentRun, run);
@@ -138,15 +138,15 @@ export abstract class BaseTracer extends BaseCallbackHandler {
       prompts,
       session_id: this.session.id,
       execution_order: this.executionOrder,
-      type: "llm",
+      type: 'llm'
     };
 
     this._startTrace(run);
   }
 
   async handleLLMEnd(output: LLMResult, _verbose?: boolean): Promise<void> {
-    if (this.stack.length === 0 || this.stack.at(-1)?.type !== "llm") {
-      throw new Error("No LLM run to end.");
+    if (this.stack.length === 0 || this.stack.at(-1)?.type !== 'llm') {
+      throw new Error('No LLM run to end.');
     }
     const run = this.stack.at(-1) as LLMRun;
     run.end_time = Date.now();
@@ -155,8 +155,8 @@ export abstract class BaseTracer extends BaseCallbackHandler {
   }
 
   async handleLLMError(error: Error, _verbose?: boolean): Promise<void> {
-    if (this.stack.length === 0 || this.stack.at(-1)?.type !== "llm") {
-      throw new Error("No LLM run to end.");
+    if (this.stack.length === 0 || this.stack.at(-1)?.type !== 'llm') {
+      throw new Error('No LLM run to end.');
     }
     const run = this.stack.at(-1) as LLMRun;
     run.end_time = Date.now();
@@ -179,10 +179,10 @@ export abstract class BaseTracer extends BaseCallbackHandler {
       inputs,
       session_id: this.session.id,
       execution_order: this.executionOrder,
-      type: "chain",
+      type: 'chain',
       child_llm_runs: [],
       child_chain_runs: [],
-      child_tool_runs: [],
+      child_tool_runs: []
     };
 
     this._startTrace(run);
@@ -192,8 +192,8 @@ export abstract class BaseTracer extends BaseCallbackHandler {
     outputs: ChainValues,
     _verbose?: boolean
   ): Promise<void> {
-    if (this.stack.length === 0 || this.stack.at(-1)?.type !== "chain") {
-      throw new Error("No chain run to end.");
+    if (this.stack.length === 0 || this.stack.at(-1)?.type !== 'chain') {
+      throw new Error('No chain run to end.');
     }
     const run = this.stack.at(-1) as ChainRun;
     run.end_time = Date.now();
@@ -202,8 +202,8 @@ export abstract class BaseTracer extends BaseCallbackHandler {
   }
 
   async handleChainError(error: Error, _verbose?: boolean): Promise<void> {
-    if (this.stack.length === 0 || this.stack.at(-1)?.type !== "chain") {
-      throw new Error("No chain run to end.");
+    if (this.stack.length === 0 || this.stack.at(-1)?.type !== 'chain') {
+      throw new Error('No chain run to end.');
     }
     const run = this.stack.at(-1) as ChainRun;
     run.end_time = Date.now();
@@ -226,19 +226,19 @@ export abstract class BaseTracer extends BaseCallbackHandler {
       tool_input: input,
       session_id: this.session.id,
       execution_order: this.executionOrder,
-      type: "tool",
+      type: 'tool',
       action: JSON.stringify(tool), // TODO: this is duplicate info, not needed
       child_llm_runs: [],
       child_chain_runs: [],
-      child_tool_runs: [],
+      child_tool_runs: []
     };
 
     this._startTrace(run);
   }
 
   async handleToolEnd(output: string, _verbose?: boolean): Promise<void> {
-    if (this.stack.length === 0 || this.stack.at(-1)?.type !== "tool") {
-      throw new Error("No tool run to end");
+    if (this.stack.length === 0 || this.stack.at(-1)?.type !== 'tool') {
+      throw new Error('No tool run to end');
     }
     const run = this.stack.at(-1) as ToolRun;
     run.end_time = Date.now();
@@ -247,8 +247,8 @@ export abstract class BaseTracer extends BaseCallbackHandler {
   }
 
   async handleToolError(error: Error, _verbose?: boolean): Promise<void> {
-    if (this.stack.length === 0 || this.stack.at(-1)?.type !== "tool") {
-      throw new Error("No tool run to end.");
+    if (this.stack.length === 0 || this.stack.at(-1)?.type !== 'tool') {
+      throw new Error('No tool run to end.');
     }
     const run = this.stack.at(-1) as ToolRun;
     run.end_time = Date.now();
@@ -259,33 +259,33 @@ export abstract class BaseTracer extends BaseCallbackHandler {
 
 export class LangChainTracer extends BaseTracer {
   protected endpoint =
-    process.env.LANGCHAIN_ENDPOINT || "http://localhost:8000";
+    process.env.LANGCHAIN_ENDPOINT || 'http://localhost:8000';
 
   protected headers: Record<string, string> = {
-    "Content-Type": "application/json",
+    'Content-Type': 'application/json'
   };
 
   constructor() {
     super();
     if (process.env.LANGCHAIN_API_KEY) {
-      this.headers["x-api-key"] = process.env.LANGCHAIN_API_KEY;
+      this.headers['x-api-key'] = process.env.LANGCHAIN_API_KEY;
     }
   }
 
   protected async persistRun(run: LLMRun | ChainRun | ToolRun): Promise<void> {
     let endpoint;
-    if (run.type === "llm") {
+    if (run.type === 'llm') {
       endpoint = `${this.endpoint}/llm-runs`;
-    } else if (run.type === "chain") {
+    } else if (run.type === 'chain') {
       endpoint = `${this.endpoint}/chain-runs`;
     } else {
       endpoint = `${this.endpoint}/tool-runs`;
     }
 
     const response = await fetch(endpoint, {
-      method: "POST",
+      method: 'POST',
       headers: this.headers,
-      body: JSON.stringify(run),
+      body: JSON.stringify(run)
     });
     if (!response.ok) {
       console.error(
@@ -299,9 +299,9 @@ export class LangChainTracer extends BaseTracer {
   ): Promise<TracerSession> {
     const endpoint = `${this.endpoint}/sessions`;
     const response = await fetch(endpoint, {
-      method: "POST",
+      method: 'POST',
       headers: this.headers,
-      body: JSON.stringify(sessionCreate),
+      body: JSON.stringify(sessionCreate)
     });
     if (!response.ok) {
       console.error(
@@ -309,12 +309,12 @@ export class LangChainTracer extends BaseTracer {
       );
       return {
         id: 1,
-        ...sessionCreate,
+        ...sessionCreate
       };
     }
     return {
       id: (await response.json()).id,
-      ...sessionCreate,
+      ...sessionCreate
     };
   }
 
@@ -330,8 +330,8 @@ export class LangChainTracer extends BaseTracer {
 
   private async _handleSessionResponse(endpoint: string) {
     const response = await fetch(endpoint, {
-      method: "GET",
-      headers: this.headers,
+      method: 'GET',
+      headers: this.headers
     });
     let tracerSession: TracerSession;
     if (!response.ok) {
@@ -340,7 +340,7 @@ export class LangChainTracer extends BaseTracer {
       );
       tracerSession = {
         id: 1,
-        start_time: Date.now(),
+        start_time: Date.now()
       };
       this.session = tracerSession;
       return tracerSession;
@@ -349,7 +349,7 @@ export class LangChainTracer extends BaseTracer {
     if (resp.length === 0) {
       tracerSession = {
         id: 1,
-        start_time: Date.now(),
+        start_time: Date.now()
       };
       this.session = tracerSession;
       return tracerSession;

@@ -1,2 +1,3 @@
-export { BaseChatModel, SimpleChatModel } from "./base.js";
-export { ChatOpenAI } from "./openai.js";
+// langchain/src/chat_models/index.ts
+export { BaseChatModel, SimpleChatModel } from './base';
+export { ChatOpenAI } from './openai';

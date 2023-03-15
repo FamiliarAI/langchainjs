@@ -1,14 +1,9 @@
 import {
   UserChatMessage,
   AssistantChatMessage,
-  BaseChatMessage,
-} from "../schema/index.js";
-import {
-  BaseMemory,
-  InputValues,
-  OutputValues,
-  getInputValue,
-} from "./base.js";
+  BaseChatMessage
+} from '../schema/index';
+import { BaseMemory, InputValues, OutputValues, getInputValue } from './base';
 
 export class ChatMessageHistory {
   messages: BaseChatMessage[] = [];

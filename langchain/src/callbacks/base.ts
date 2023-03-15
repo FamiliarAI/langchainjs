@@ -2,10 +2,9 @@ import {
   AgentAction,
   AgentFinish,
   ChainValues,
-  LLMResult,
-} from "../schema/index.js";
+  LLMResult
+} from '../schema/index';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Error = any;
 
 export interface BaseCallbackHandlerInput {
@@ -104,7 +103,7 @@ export class CallbackManager extends BaseCallbackManager {
     verbose?: boolean
   ): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreLLM && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleLLMStart?.(llm, prompts);
@@ -120,7 +119,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleLLMNewToken(token: string, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreLLM && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleLLMNewToken?.(token);
@@ -136,7 +135,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleLLMError(err: Error, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreLLM && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleLLMError?.(err);
@@ -152,7 +151,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleLLMEnd(output: LLMResult, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreLLM && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleLLMEnd?.(output);
@@ -172,7 +171,7 @@ export class CallbackManager extends BaseCallbackManager {
     verbose?: boolean
   ): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreChain && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleChainStart?.(chain, inputs);
@@ -188,7 +187,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleChainError(err: Error, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreChain && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleChainError?.(err);
@@ -204,7 +203,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleChainEnd(output: ChainValues, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreChain && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleChainEnd?.(output);
@@ -224,7 +223,7 @@ export class CallbackManager extends BaseCallbackManager {
     verbose?: boolean
   ): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreAgent && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleToolStart?.(tool, input);
@@ -240,7 +239,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleToolError(err: Error, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreAgent && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleToolError?.(err);
@@ -256,7 +255,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleToolEnd(output: string, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreAgent && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleToolEnd?.(output);
@@ -272,7 +271,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleText(text: string, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (verbose || handler.alwaysVerbose) {
           try {
             await handler.handleText?.(text);
@@ -291,7 +290,7 @@ export class CallbackManager extends BaseCallbackManager {
     verbose?: boolean
   ): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreAgent && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleAgentAction?.(action);
@@ -307,7 +306,7 @@ export class CallbackManager extends BaseCallbackManager {
 
   async handleAgentEnd(action: AgentFinish, verbose?: boolean): Promise<void> {
     await Promise.all(
-      this.handlers.map(async (handler) => {
+      this.handlers.map(async handler => {
         if (!handler.ignoreAgent && (verbose || handler.alwaysVerbose)) {
           try {
             await handler.handleAgentEnd?.(action);
@@ -326,7 +325,7 @@ export class CallbackManager extends BaseCallbackManager {
   }
 
   removeHandler(handler: BaseCallbackHandler): void {
-    this.handlers = this.handlers.filter((_handler) => _handler !== handler);
+    this.handlers = this.handlers.filter(_handler => _handler !== handler);
   }
 
   setHandlers(handlers: BaseCallbackHandler[]): void {
@@ -355,7 +354,7 @@ export class ConsoleCallbackHandler extends BaseCallbackHandler {
   }
 
   async handleChainEnd(_output: ChainValues) {
-    console.log("Finished chain.");
+    console.log('Finished chain.');
   }
 
   async handleAgentAction(action: AgentAction) {

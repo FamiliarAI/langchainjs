@@ -1,89 +1,90 @@
-import { expect, test } from "@jest/globals";
-import { FewShotPromptTemplate } from "../few_shot.js";
-import { LengthBasedExampleSelector } from "../index.js";
-import { PromptTemplate } from "../prompt.js";
+// langchain/src/prompts/tests/few_shot.test.ts
+import { expect, test } from '@jest/globals';
+import { FewShotPromptTemplate } from '../few_shot';
+import { LengthBasedExampleSelector } from '../index';
+import { PromptTemplate } from '../prompt';
 
-test("Test using partial", async () => {
-  const examplePrompt = PromptTemplate.fromTemplate("{foo}{bar}");
+test('Test using partial', async () => {
+  const examplePrompt = PromptTemplate.fromTemplate('{foo}{bar}');
   const prompt = new FewShotPromptTemplate({
-    prefix: "{foo}{bar}",
+    prefix: '{foo}{bar}',
     examples: [],
-    suffix: "",
-    templateFormat: "f-string",
-    exampleSeparator: "\n",
+    suffix: '',
+    templateFormat: 'f-string',
+    exampleSeparator: '\n',
     examplePrompt,
-    inputVariables: ["foo"],
-    partialVariables: { bar: "baz" },
+    inputVariables: ['foo'],
+    partialVariables: { bar: 'baz' }
   });
-  expect(await prompt.format({ foo: "foo" })).toBe("foobaz\n");
+  expect(await prompt.format({ foo: 'foo' })).toBe('foobaz\n');
 });
 
-test("Test using full partial", async () => {
-  const examplePrompt = PromptTemplate.fromTemplate("{foo}{bar}");
+test('Test using full partial', async () => {
+  const examplePrompt = PromptTemplate.fromTemplate('{foo}{bar}');
   const prompt = new FewShotPromptTemplate({
-    prefix: "{foo}{bar}",
+    prefix: '{foo}{bar}',
     examples: [],
-    suffix: "",
-    templateFormat: "f-string",
-    exampleSeparator: "\n",
+    suffix: '',
+    templateFormat: 'f-string',
+    exampleSeparator: '\n',
     examplePrompt,
     inputVariables: [],
-    partialVariables: { bar: "baz", foo: "boo" },
+    partialVariables: { bar: 'baz', foo: 'boo' }
   });
-  expect(await prompt.format({})).toBe("boobaz\n");
+  expect(await prompt.format({})).toBe('boobaz\n');
 });
 
-test("Test partial with string", async () => {
-  const examplePrompt = PromptTemplate.fromTemplate("{foo}{bar}");
+test('Test partial with string', async () => {
+  const examplePrompt = PromptTemplate.fromTemplate('{foo}{bar}');
   const prompt = new FewShotPromptTemplate({
-    prefix: "{foo}{bar}",
+    prefix: '{foo}{bar}',
     examples: [],
-    suffix: "",
-    templateFormat: "f-string",
-    exampleSeparator: "\n",
+    suffix: '',
+    templateFormat: 'f-string',
+    exampleSeparator: '\n',
     examplePrompt,
-    inputVariables: ["foo", "bar"],
+    inputVariables: ['foo', 'bar']
   });
 
-  const partialPrompt = await prompt.partial({ foo: "foo" });
-  expect(await partialPrompt.format({ bar: "baz" })).toBe("foobaz\n");
-  expect(prompt.inputVariables).toEqual(["foo", "bar"]);
+  const partialPrompt = await prompt.partial({ foo: 'foo' });
+  expect(await partialPrompt.format({ bar: 'baz' })).toBe('foobaz\n');
+  expect(prompt.inputVariables).toEqual(['foo', 'bar']);
 });
 
-test("Test partial with function", async () => {
-  const examplePrompt = PromptTemplate.fromTemplate("{foo}{bar}");
+test('Test partial with function', async () => {
+  const examplePrompt = PromptTemplate.fromTemplate('{foo}{bar}');
   const prompt = new FewShotPromptTemplate({
-    prefix: "{foo}{bar}",
+    prefix: '{foo}{bar}',
     examples: [],
-    suffix: "",
-    templateFormat: "f-string",
-    exampleSeparator: "\n",
+    suffix: '',
+    templateFormat: 'f-string',
+    exampleSeparator: '\n',
     examplePrompt,
-    inputVariables: ["foo", "bar"],
+    inputVariables: ['foo', 'bar']
   });
 
   const partialPrompt = await prompt.partial({
-    foo: () => Promise.resolve("boo"),
+    foo: () => Promise.resolve('boo')
   });
-  expect(await partialPrompt.format({ bar: "baz" })).toBe("boobaz\n");
+  expect(await partialPrompt.format({ bar: 'baz' })).toBe('boobaz\n');
 });
 
-test("Test partial with function and examples", async () => {
-  const examplePrompt = PromptTemplate.fromTemplate("An example about {x}");
+test('Test partial with function and examples', async () => {
+  const examplePrompt = PromptTemplate.fromTemplate('An example about {x}');
   const prompt = new FewShotPromptTemplate({
-    prefix: "{foo}{bar}",
-    examples: [{ x: "foo" }, { x: "bar" }],
-    suffix: "",
-    templateFormat: "f-string",
-    exampleSeparator: "\n",
+    prefix: '{foo}{bar}',
+    examples: [{ x: 'foo' }, { x: 'bar' }],
+    suffix: '',
+    templateFormat: 'f-string',
+    exampleSeparator: '\n',
     examplePrompt,
-    inputVariables: ["foo", "bar"],
+    inputVariables: ['foo', 'bar']
   });
 
   const partialPrompt = await prompt.partial({
-    foo: () => Promise.resolve("boo"),
+    foo: () => Promise.resolve('boo')
   });
-  expect(await partialPrompt.format({ bar: "baz" })).toBe(
+  expect(await partialPrompt.format({ bar: 'baz' })).toBe(
     `boobaz
 An example about foo
 An example about bar
@@ -91,26 +92,26 @@ An example about bar
   );
 });
 
-test.only("Test partial with function and example selector", async () => {
-  const examplePrompt = PromptTemplate.fromTemplate("An example about {x}");
+test('Test partial with function and example selector', async () => {
+  const examplePrompt = PromptTemplate.fromTemplate('An example about {x}');
   const exampleSelector = await LengthBasedExampleSelector.fromExamples(
-    [{ x: "foo" }, { x: "bar" }],
+    [{ x: 'foo' }, { x: 'bar' }],
     { examplePrompt, maxLength: 200 }
   );
   const prompt = new FewShotPromptTemplate({
-    prefix: "{foo}{bar}",
+    prefix: '{foo}{bar}',
     exampleSelector,
-    suffix: "",
-    templateFormat: "f-string",
-    exampleSeparator: "\n",
+    suffix: '',
+    templateFormat: 'f-string',
+    exampleSeparator: '\n',
     examplePrompt,
-    inputVariables: ["foo", "bar"],
+    inputVariables: ['foo', 'bar']
   });
 
   const partialPrompt = await prompt.partial({
-    foo: () => Promise.resolve("boo"),
+    foo: () => Promise.resolve('boo')
   });
-  expect(await partialPrompt.format({ bar: "baz" })).toBe(
+  expect(await partialPrompt.format({ bar: 'baz' })).toBe(
     `boobaz
 An example about foo
 An example about bar

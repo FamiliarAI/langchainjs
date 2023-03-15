@@ -1,8 +1,8 @@
-export { BaseOutputParser, SerializedOutputParser } from "./base.js";
+export { BaseOutputParser, SerializedOutputParser } from './base';
 export {
   ListOutputParser,
   CommaSeparatedListOutputParser,
-  SerializedCommaSeparatedListOutputParser,
-} from "./list.js";
-export { RegexParser, SerializedRegexParser } from "./regex.js";
-export { StructuredOutputParser } from "./structured.js";
+  SerializedCommaSeparatedListOutputParser
+} from './list';
+export { RegexParser, SerializedRegexParser } from './regex';
+export { StructuredOutputParser } from './structured';

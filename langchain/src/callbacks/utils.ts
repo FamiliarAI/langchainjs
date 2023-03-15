@@ -1,6 +1,6 @@
-import * as process from "process";
-import { LangChainTracer } from "./tracers.js";
-import { CallbackManager, ConsoleCallbackHandler } from "./base.js";
+import * as process from 'process';
+import { LangChainTracer } from './tracers';
+import { CallbackManager, ConsoleCallbackHandler } from './base';
 
 export class SingletonCallbackManager extends CallbackManager {
   private static instance: SingletonCallbackManager;
@@ -15,7 +15,7 @@ export class SingletonCallbackManager extends CallbackManager {
       SingletonCallbackManager.instance.addHandler(
         new ConsoleCallbackHandler()
       );
-      if (process.env.LANGCHAIN_HANDLER === "langchain") {
+      if (process.env.LANGCHAIN_HANDLER === 'langchain') {
         SingletonCallbackManager.instance.addHandler(new LangChainTracer());
       }
     }

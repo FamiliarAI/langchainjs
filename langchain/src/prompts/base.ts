@@ -1,17 +1,17 @@
-import { BaseOutputParser } from "../output_parsers/index.js";
-import type { FewShotPromptTemplate, PromptTemplate } from "./index.js";
-import { ChatPromptTemplate } from "./index.js";
-import { BasePromptValue, UserChatMessage } from "../schema/index.js";
+// langchain/src/prompts/base.ts
+import { BaseOutputParser } from '../output_parsers/index';
+import type { FewShotPromptTemplate, PromptTemplate } from './index';
+import { ChatPromptTemplate } from './index';
+import { BasePromptValue, UserChatMessage } from '../schema/index';
 
 export type SerializedBasePromptTemplate = ReturnType<
   InstanceType<
     | typeof PromptTemplate
     | typeof FewShotPromptTemplate
     | typeof ChatPromptTemplate
-  >["serialize"]
+  >['serialize']
 >;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type InputValues = Record<string, any>;
 export type PartialValues = Record<
   string,
@@ -58,7 +58,7 @@ export interface BasePromptTemplateInput {
  * @augments BasePromptTemplateInput
  */
 export abstract class BasePromptTemplate implements BasePromptTemplateInput {
-  inputVariables: string[];
+  inputVariables: string[] = [];
 
   outputParser?: BaseOutputParser;
 
@@ -66,7 +66,7 @@ export abstract class BasePromptTemplate implements BasePromptTemplateInput {
 
   constructor(input: BasePromptTemplateInput) {
     const { inputVariables } = input;
-    if (inputVariables.includes("stop")) {
+    if (inputVariables.includes('stop')) {
       throw new Error(
         "Cannot have an input variable named 'stop', as it is used internally, please rename."
       );
@@ -84,7 +84,7 @@ export abstract class BasePromptTemplate implements BasePromptTemplateInput {
     for (let i = 0; i < Object.keys(partialVariables).length; i += 1) {
       const key = Object.keys(partialVariables)[i];
       const value = partialVariables[key];
-      if (typeof value === "string") {
+      if (typeof value === 'string') {
         partialValues[key] = value;
       } else {
         partialValues[key] = await value();
@@ -136,16 +136,16 @@ export abstract class BasePromptTemplate implements BasePromptTemplateInput {
     data: SerializedBasePromptTemplate
   ): Promise<BasePromptTemplate> {
     switch (data._type) {
-      case "prompt": {
-        const { PromptTemplate } = await import("./prompt.js");
+      case 'prompt': {
+        const { PromptTemplate } = await import('./prompt');
         return PromptTemplate.deserialize(data);
       }
       case undefined: {
-        const { PromptTemplate } = await import("./prompt.js");
-        return PromptTemplate.deserialize({ ...data, _type: "prompt" });
+        const { PromptTemplate } = await import('./prompt');
+        return PromptTemplate.deserialize({ ...data, _type: 'prompt' });
       }
-      case "few_shot": {
-        const { FewShotPromptTemplate } = await import("./few_shot.js");
+      case 'few_shot': {
+        const { FewShotPromptTemplate } = await import('./few_shot');
         return FewShotPromptTemplate.deserialize(data);
       }
       default:

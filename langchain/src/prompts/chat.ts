@@ -3,22 +3,22 @@ import {
   BaseStringPromptTemplate,
   BasePromptTemplateInput,
   InputValues,
-  PartialValues,
-} from "./base.js";
-import { DEFAULT_FORMATTER_MAPPING, TemplateFormat } from "./template.js";
-import { SerializedOutputParser } from "../output_parsers/index.js";
+  PartialValues
+} from './base';
+import { DEFAULT_FORMATTER_MAPPING, TemplateFormat } from './template';
+import { SerializedOutputParser } from '../output_parsers/index';
 import {
   AssistantChatMessage,
   BaseChatMessage,
   BasePromptValue,
   UserChatMessage,
-  SystemChatMessage,
-} from "../schema/index.js";
-import { PromptTemplate } from "./prompt.js";
+  SystemChatMessage
+} from '../schema/index';
+import { PromptTemplate } from './prompt';
 
 /** Serialized Chat prompt template */
 export type SerializedChatPromptTemplate = {
-  _type?: "chat_prompt";
+  _type?: 'chat_prompt';
   input_variables: string[];
   output_parser?: SerializedOutputParser;
   template_format?: TemplateFormat;
@@ -64,23 +64,6 @@ export abstract class BaseMessageStringPromptTemplate extends BaseMessagePromptT
 
   async formatMessages(values: InputValues): Promise<BaseChatMessage[]> {
     return [await this.format(values)];
-  }
-}
-
-export class ChatMessagePromptTemplate extends BaseMessageStringPromptTemplate {
-  role: string;
-
-  async format(values: InputValues): Promise<BaseChatMessage> {
-    return new xxx(await this.prompt.format(values), this.role);
-  }
-
-  constructor(prompt: BaseStringPromptTemplate, role: string) {
-    super(prompt);
-    this.role = role;
-  }
-
-  static fromTemplate(template: string, role: string) {
-    return new this(PromptTemplate.fromTemplate(template), role);
   }
 }
 
@@ -168,9 +151,9 @@ export class ChatPromptTemplate
   extends BasePromptTemplate
   implements ChatPromptTemplateInput
 {
-  promptMessages: BaseMessagePromptTemplate[];
+  promptMessages: BaseMessagePromptTemplate[] = [];
 
-  templateFormat: TemplateFormat = "f-string";
+  templateFormat: TemplateFormat = 'f-string';
 
   validateTemplate = true;
 
@@ -182,7 +165,7 @@ export class ChatPromptTemplate
       if (!(this.templateFormat in DEFAULT_FORMATTER_MAPPING)) {
         const validFormats = Object.keys(DEFAULT_FORMATTER_MAPPING);
         throw new Error(`Invalid template format. Got \`${this.templateFormat}\`;
-                         should be one of ${validFormats}`);
+                           should be one of ${validFormats}`);
       }
       const inputVariables = new Set<string>();
       for (const promptMessage of this.promptMessages) {
@@ -191,31 +174,31 @@ export class ChatPromptTemplate
         }
       }
       const difference = new Set(
-        [...this.inputVariables].filter((x) => !inputVariables.has(x))
+        [...this.inputVariables].filter(x => !inputVariables.has(x))
       );
       if (difference.size > 0) {
         throw new Error(
-          `Input variables \`${[
-            ...difference,
-          ]}\` are not used in any of the prompt messages.`
+          `Input variables \`${Array.from(
+            difference
+          )}\` are not used in any of the prompt messages.`
         );
       }
       const thisInputVariables = new Set(this.inputVariables);
       const otherDifference = new Set(
-        [...inputVariables].filter((x) => !thisInputVariables.has(x))
+        Array.from(inputVariables).filter(x => !thisInputVariables.has(x))
       );
       if (otherDifference.size > 0) {
         throw new Error(
-          `Input variables \`${[
-            ...otherDifference,
-          ]}\` are used in prompt messages but not in the prompt template.`
+          `Input variables \`${Array.from(
+            otherDifference
+          )}\` are used in prompt messages but not in the prompt template.`
         );
       }
     }
   }
 
-  _getPromptType(): "chat" {
-    return "chat";
+  _getPromptType(): 'chat' {
+    return 'chat';
   }
 
   async format(values: InputValues): Promise<string> {
@@ -245,12 +228,12 @@ export class ChatPromptTemplate
       input_variables: this.inputVariables,
       output_parser: this.outputParser?.serialize(),
       template_format: this.templateFormat,
-      prompt_messages: this.promptMessages,
+      prompt_messages: this.promptMessages
     };
   }
 
   async partial(_: PartialValues): Promise<BasePromptTemplate> {
-    throw new Error("ChatPromptTemplate.partial() not yet implemented");
+    throw new Error('ChatPromptTemplate.partial() not yet implemented');
   }
 
   static fromPromptMessages(
@@ -263,8 +246,8 @@ export class ChatPromptTemplate
       }
     }
     return new ChatPromptTemplate({
-      inputVariables: [...inputVariables],
-      promptMessages,
+      inputVariables: Array.from(inputVariables),
+      promptMessages
     });
   }
 }
