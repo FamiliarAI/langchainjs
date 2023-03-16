@@ -1,36 +1,36 @@
+// langchain/src/chat_models/openai.ts
 import {
   Configuration,
   OpenAIApi,
   CreateChatCompletionRequest,
   ConfigurationParameters,
-  ChatCompletionResponseMessageRoleEnum,
-} from "openai";
-import type { IncomingMessage } from "http";
-import { createParser } from "eventsource-parser";
-import { backOff } from "exponential-backoff";
-import fetchAdapter from "../util/axios-fetch-adapter.js";
-import { BaseChatModel, BaseChatModelParams } from "./base.js";
+  ChatCompletionResponseMessageRoleEnum
+} from 'openai';
+import type { IncomingMessage } from 'http';
+import { createParser } from 'eventsource-parser';
+import { backOff } from 'exponential-backoff';
+import fetchAdapter from '../util/axios-fetch-adapter.js';
+import { BaseChatModel, BaseChatModelParams } from './base';
 import {
-  AIChatMessage,
+  AssistantChatMessage,
   BaseChatMessage,
   ChatGeneration,
-  ChatMessage,
   ChatResult,
-  HumanChatMessage,
-  MessageType,
-  SystemChatMessage,
-} from "../schema/index.js";
+  UserChatMessage,
+  MessageRole,
+  SystemChatMessage
+} from '../schema/index';
 
 function messageTypeToOpenAIRole(
-  type: MessageType
+  type: MessageRole
 ): ChatCompletionResponseMessageRoleEnum {
   switch (type) {
-    case "system":
-      return "system";
-    case "ai":
-      return "assistant";
-    case "human":
-      return "user";
+    case 'system':
+      return 'system';
+    case 'assistant':
+      return 'assistant';
+    case 'user':
+      return 'user';
     default:
       throw new Error(`Unknown message type: ${type}`);
   }
@@ -41,14 +41,12 @@ function openAIResponseToChatMessage(
   text: string
 ): BaseChatMessage {
   switch (role) {
-    case "user":
-      return new HumanChatMessage(text);
-    case "assistant":
-      return new AIChatMessage(text);
-    case "system":
+    case 'user':
+      return new UserChatMessage(text);
+    case 'system':
       return new SystemChatMessage(text);
     default:
-      return new ChatMessage(text, role ?? "unknown");
+      return new AssistantChatMessage(text);
   }
 }
 
@@ -102,7 +100,6 @@ interface OpenAIInput extends ModelParams {
   stop?: string[];
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Kwargs = Record<string, any>;
 
 /**
@@ -133,7 +130,7 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
 
   logitBias?: Record<string, number>;
 
-  modelName = "gpt-3.5-turbo";
+  modelName = 'gpt-3.5-turbo';
 
   modelKwargs?: Kwargs;
 
@@ -166,7 +163,7 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
 
     const apiKey = fields?.openAIApiKey ?? process.env.OPENAI_API_KEY;
     if (!apiKey) {
-      throw new Error("OpenAI API key not found");
+      throw new Error('OpenAI API key not found');
     }
 
     this.modelName = fields?.modelName ?? this.modelName;
@@ -184,19 +181,34 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
     this.streaming = fields?.streaming ?? false;
 
     if (this.streaming && this.n > 1) {
-      throw new Error("Cannot stream results when n > 1");
+      throw new Error('Cannot stream results when n > 1');
     }
+
+    this.batchClient = new OpenAIApi(
+      new Configuration({
+        baseOptions: { adapter: fetchAdapter },
+        apiKey: fields?.openAIApiKey ?? process.env.OPENAI_API_KEY
+      })
+    );
+
+    // just placeholder, streaming client not yet ready
+    this.streamingClient = new OpenAIApi(
+      new Configuration({
+        baseOptions: { adapter: fetchAdapter },
+        apiKey: fields?.openAIApiKey ?? process.env.OPENAI_API_KEY
+      })
+    );
 
     this.clientConfig = {
       apiKey: fields?.openAIApiKey ?? process.env.OPENAI_API_KEY,
-      ...configuration,
+      ...configuration
     };
   }
 
   /**
    * Get the parameters used to invoke the model
    */
-  invocationParams(): Omit<CreateChatCompletionRequest, "messages"> & Kwargs {
+  invocationParams(): Omit<CreateChatCompletionRequest, 'messages'> & Kwargs {
     return {
       model: this.modelName,
       temperature: this.temperature,
@@ -207,7 +219,7 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
       logit_bias: this.logitBias,
       stop: this.stop,
       stream: this.streaming,
-      ...this.modelKwargs,
+      ...this.modelKwargs
     };
   }
 
@@ -215,7 +227,7 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
     return {
       model_name: this.modelName,
       ...this.invocationParams(),
-      ...this.clientConfig,
+      ...this.clientConfig
     };
   }
 
@@ -246,7 +258,7 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
     stop?: string[]
   ): Promise<ChatResult> {
     if (this.stop && stop) {
-      throw new Error("Stop found in input and default params");
+      throw new Error('Stop found in input and default params');
     }
 
     const params = this.invocationParams();
@@ -254,19 +266,19 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
 
     const { data } = await this.completionWithRetry({
       ...params,
-      messages: messages.map((message) => ({
-        role: messageTypeToOpenAIRole(message._getType()),
-        content: message.text,
-      })),
+      messages: messages.map(message => ({
+        role: messageTypeToOpenAIRole(message.role),
+        content: message.content
+      }))
     });
 
     if (params.stream) {
-      let role: ChatCompletionResponseMessageRoleEnum = "assistant";
+      let role: ChatCompletionResponseMessageRoleEnum = 'assistant';
       const completion = await new Promise<string>((resolve, reject) => {
-        let innerCompletion = "";
-        const parser = createParser((event) => {
-          if (event.type === "event") {
-            if (event.data === "[DONE]") {
+        let innerCompletion = '';
+        const parser = createParser(event => {
+          if (event.type === 'event') {
+            if (event.data === '[DONE]') {
               resolve(innerCompletion);
             } else {
               const response = JSON.parse(event.data) as {
@@ -286,11 +298,11 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
 
               const part = response.choices[0];
               if (part != null) {
-                innerCompletion += part.delta?.content ?? "";
+                innerCompletion += part.delta?.content ?? '';
                 role = part.delta?.role ?? role;
                 // eslint-disable-next-line no-void
                 void this.callbackManager.handleLLMNewToken(
-                  part.delta?.content ?? "",
+                  part.delta?.content ?? '',
                   true
                 );
               }
@@ -300,31 +312,31 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
 
         // workaround for incorrect axios types
         const stream = data as unknown as IncomingMessage;
-        stream.on("data", (data: Buffer) =>
-          parser.feed(data.toString("utf-8"))
+        stream.on('data', (data: Buffer) =>
+          parser.feed(data.toString('utf-8'))
         );
-        stream.on("error", (error) => reject(error));
+        stream.on('error', error => reject(error));
       });
       return {
         generations: [
           {
             text: completion,
-            message: openAIResponseToChatMessage(role, completion),
-          },
-        ],
+            message: openAIResponseToChatMessage(role, completion)
+          }
+        ]
       };
     }
     const generations: ChatGeneration[] = [];
     for (const part of data.choices) {
       const role = part.message?.role ?? undefined;
-      const text = part.message?.content ?? "";
+      const text = part.message?.content ?? '';
       generations.push({
         text,
-        message: openAIResponseToChatMessage(role, text),
+        message: openAIResponseToChatMessage(role, text)
       });
     }
     return {
-      generations,
+      generations
     };
   }
 
@@ -333,7 +345,7 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
     if (!request.stream && !this.batchClient) {
       const clientConfig = new Configuration({
         ...this.clientConfig,
-        baseOptions: { adapter: fetchAdapter },
+        baseOptions: { adapter: fetchAdapter }
       });
       this.batchClient = new OpenAIApi(clientConfig);
     }
@@ -345,17 +357,17 @@ export class ChatOpenAI extends BaseChatModel implements OpenAIInput {
     const makeCompletionRequest = async () =>
       client.createChatCompletion(
         request,
-        request.stream ? { responseType: "stream" } : undefined
+        request.stream ? { responseType: 'stream' } : undefined
       );
     return backOff(makeCompletionRequest, {
       startingDelay: 4,
       maxDelay: 10,
-      numOfAttempts: this.maxRetries,
+      numOfAttempts: this.maxRetries
       // TODO(sean) pass custom retry function to check error types.
     });
   }
 
   _llmType() {
-    return "openai";
+    return 'openai';
   }
 }

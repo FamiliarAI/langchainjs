@@ -1,4 +1,4 @@
-import { SerializedOutputParser } from "./serde.js";
+import { SerializedOutputParser } from './serde.js';
 
 /**
  * Class to parse the output of an LLM call.
@@ -28,7 +28,7 @@ export abstract class BaseOutputParser {
    * Return the string type key uniquely identifying this class of parser
    */
   _type(): string {
-    throw new Error("_type not implemented");
+    throw new Error('_type not implemented');
   }
 
   /**
@@ -43,8 +43,8 @@ export abstract class BaseOutputParser {
     data: SerializedOutputParser
   ): Promise<BaseOutputParser> {
     switch (data._type) {
-      case "regex_parser": {
-        const { RegexParser } = await import("./regex.js");
+      case 'regex_parser': {
+        const { RegexParser } = await import('./regex.js');
         return RegexParser.deserialize(data);
       }
       default:

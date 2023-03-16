@@ -1,12 +1,14 @@
-import { BaseOutputParser } from "../output_parsers/index.js";
+// langchain/src/prompts/base.ts
+import { InputValues } from '.';
+import { BaseOutputParser } from '../output_parsers/index';
 import {
   BasePromptValue,
   Example,
-  HumanChatMessage,
+  UserChatMessage,
   InputValues,
-  PartialValues,
-} from "../schema/index.js";
-import { SerializedBasePromptTemplate } from "./serde.js";
+  PartialValues
+} from '../schema/index';
+import { SerializedBasePromptTemplate } from './serde';
 
 export class StringPromptValue {
   value: string;
@@ -20,7 +22,7 @@ export class StringPromptValue {
   }
 
   toChatMessages() {
-    return [new HumanChatMessage(this.value)];
+    return [new UserChatMessage(this.value)];
   }
 }
 
@@ -48,7 +50,7 @@ export interface BasePromptTemplateInput {
  * @augments BasePromptTemplateInput
  */
 export abstract class BasePromptTemplate implements BasePromptTemplateInput {
-  inputVariables: string[];
+  inputVariables: string[] = [];
 
   outputParser?: BaseOutputParser;
 
@@ -56,7 +58,7 @@ export abstract class BasePromptTemplate implements BasePromptTemplateInput {
 
   constructor(input: BasePromptTemplateInput) {
     const { inputVariables } = input;
-    if (inputVariables.includes("stop")) {
+    if (inputVariables.includes('stop')) {
       throw new Error(
         "Cannot have an input variable named 'stop', as it is used internally, please rename."
       );
@@ -74,7 +76,7 @@ export abstract class BasePromptTemplate implements BasePromptTemplateInput {
     for (let i = 0; i < Object.keys(partialVariables).length; i += 1) {
       const key = Object.keys(partialVariables)[i];
       const value = partialVariables[key];
-      if (typeof value === "string") {
+      if (typeof value === 'string') {
         partialValues[key] = value;
       } else {
         partialValues[key] = await value();
@@ -126,16 +128,16 @@ export abstract class BasePromptTemplate implements BasePromptTemplateInput {
     data: SerializedBasePromptTemplate
   ): Promise<BasePromptTemplate> {
     switch (data._type) {
-      case "prompt": {
-        const { PromptTemplate } = await import("./prompt.js");
+      case 'prompt': {
+        const { PromptTemplate } = await import('./prompt');
         return PromptTemplate.deserialize(data);
       }
       case undefined: {
-        const { PromptTemplate } = await import("./prompt.js");
-        return PromptTemplate.deserialize({ ...data, _type: "prompt" });
+        const { PromptTemplate } = await import('./prompt');
+        return PromptTemplate.deserialize({ ...data, _type: 'prompt' });
       }
-      case "few_shot": {
-        const { FewShotPromptTemplate } = await import("./few_shot.js");
+      case 'few_shot': {
+        const { FewShotPromptTemplate } = await import('./few_shot');
         return FewShotPromptTemplate.deserialize(data);
       }
       default:

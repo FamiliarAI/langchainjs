@@ -21,7 +21,7 @@ exports[`Test serialize 1`] = `
       },
     },
     {
-      "_type": "HumanMessagePromptTemplate",
+      "_type": "UserMessagePromptTemplate",
       "prompt": {
         "inputVariables": [
           "foo",
@@ -34,7 +34,7 @@ exports[`Test serialize 1`] = `
       },
     },
     {
-      "_type": "AIMessagePromptTemplate",
+      "_type": "AssistantMessagePromptTemplate",
       "prompt": {
         "inputVariables": [
           "foo",
@@ -44,19 +44,6 @@ exports[`Test serialize 1`] = `
         "templateFormat": "f-string",
         "validateTemplate": true,
       },
-    },
-    {
-      "_type": "ChatMessagePromptTemplate",
-      "prompt": {
-        "inputVariables": [
-          "foo",
-          "bar",
-        ],
-        "template": "I'm a generic message. I'm {foo}. I'm {bar}.",
-        "templateFormat": "f-string",
-        "validateTemplate": true,
-      },
-      "role": "test",
     },
   ],
   "template_format": "f-string",

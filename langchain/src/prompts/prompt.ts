@@ -1,14 +1,14 @@
-import { BaseStringPromptTemplate, BasePromptTemplateInput } from "./base.js";
+import { BaseStringPromptTemplate, BasePromptTemplateInput } from './base';
 import {
   checkValidTemplate,
   parseTemplate,
   renderTemplate,
-  TemplateFormat,
-} from "./template.js";
-import { resolveTemplateFromFile } from "../util/index.js";
-import { BaseOutputParser } from "../output_parsers/index.js";
-import { SerializedPromptTemplate } from "./serde.js";
-import { InputValues, PartialValues } from "../schema/index.js";
+  TemplateFormat
+} from './template';
+import { resolveTemplateFromFile } from '../util/index';
+import { BaseOutputParser } from '../output_parsers/index';
+import { SerializedPromptTemplate } from './serde';
+import { InputValues, PartialValues } from '../schema/index';
 
 /**
  * Inputs to create a {@link PromptTemplate}
@@ -54,9 +54,9 @@ export class PromptTemplate
   extends BaseStringPromptTemplate
   implements PromptTemplateInput
 {
-  template: string;
+  template: string = '';
 
-  templateFormat: TemplateFormat = "f-string";
+  templateFormat: TemplateFormat = 'f-string';
 
   validateTemplate = true;
 
@@ -79,8 +79,8 @@ export class PromptTemplate
     }
   }
 
-  _getPromptType(): "prompt" {
-    return "prompt";
+  _getPromptType(): 'prompt' {
+    return 'prompt';
   }
 
   async format(values: InputValues): Promise<string> {
@@ -105,13 +105,13 @@ export class PromptTemplate
     examples: string[],
     suffix: string,
     inputVariables: string[],
-    exampleSeparator = "\n\n",
-    prefix = ""
+    exampleSeparator = '\n\n',
+    prefix = ''
   ) {
     const template = [prefix, ...examples, suffix].join(exampleSeparator);
     return new PromptTemplate({
       inputVariables,
-      template,
+      template
     });
   }
 
@@ -120,26 +120,26 @@ export class PromptTemplate
    */
   static fromTemplate(template: string) {
     const names = new Set<string>();
-    parseTemplate(template, "f-string").forEach((node) => {
-      if (node.type === "variable") {
+    parseTemplate(template, 'f-string').forEach(node => {
+      if (node.type === 'variable') {
         names.add(node.name);
       }
     });
 
     return new PromptTemplate({
-      inputVariables: [...names],
-      template,
+      inputVariables: Array.from(names),
+      template
     });
   }
 
   async partial(values: PartialValues): Promise<PromptTemplate> {
     const promptDict: PromptTemplateInput = { ...this };
     promptDict.inputVariables = this.inputVariables.filter(
-      (iv) => !(iv in values)
+      iv => !(iv in values)
     );
     promptDict.partialVariables = {
       ...(this.partialVariables ?? {}),
-      ...values,
+      ...values
     };
     return new PromptTemplate(promptDict);
   }
@@ -150,7 +150,7 @@ export class PromptTemplate
       input_variables: this.inputVariables,
       output_parser: this.outputParser?.serialize(),
       template: this.template,
-      template_format: this.templateFormat,
+      template_format: this.templateFormat
     };
   }
 
@@ -162,8 +162,8 @@ export class PromptTemplate
       outputParser: data.output_parser
         ? await BaseOutputParser.deserialize(data.output_parser)
         : undefined,
-      template: await resolveTemplateFromFile("template", data),
-      templateFormat: data.template_format,
+      template: await resolveTemplateFromFile('template', data),
+      templateFormat: data.template_format
     });
     return res;
   }

@@ -1,9 +1,10 @@
-import type { SerializedOutputParser } from "../output_parsers/index.js";
-import type { Example } from "../schema/index.js";
-import type { TemplateFormat } from "./template.js";
+// langchain/src/prompts/serde.ts
+import type { SerializedOutputParser } from '../output_parsers/index';
+import type { Example } from '../schema/index';
+import type { TemplateFormat } from './template';
 
 export type SerializedPromptTemplate = {
-  _type?: "prompt";
+  _type?: 'prompt';
   input_variables: string[];
   output_parser?: SerializedOutputParser;
   template_format?: TemplateFormat;
@@ -12,7 +13,7 @@ export type SerializedPromptTemplate = {
 };
 
 export type SerializedFewShotTemplate = {
-  _type: "few_shot";
+  _type: 'few_shot';
   input_variables: string[];
   output_parser?: SerializedOutputParser;
   examples: string | Example[];
@@ -27,14 +28,14 @@ export type SerializedFewShotTemplate = {
 };
 
 export type SerializedMessagePromptTemplate = {
-  _type: "message";
+  _type: 'message';
   input_variables: string[];
   [key: string]: unknown;
 };
 
 /** Serialized Chat prompt template */
 export type SerializedChatPromptTemplate = {
-  _type?: "chat_prompt";
+  _type?: 'chat_prompt';
   input_variables: string[];
   output_parser?: SerializedOutputParser;
   template_format?: TemplateFormat;

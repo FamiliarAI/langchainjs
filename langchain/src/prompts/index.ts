@@ -1,30 +1,36 @@
+// langchain/src/prompts/index.ts
 export {
   BaseExampleSelector,
   BasePromptTemplate,
-  BasePromptTemplateInput,
   StringPromptValue,
-  BaseStringPromptTemplate,
-} from "./base.js";
-export { PromptTemplate, PromptTemplateInput } from "./prompt.js";
-export { LengthBasedExampleSelector } from "./selectors/LengthBasedExampleSelector.js";
-export { SemanticSimilarityExampleSelector } from "./selectors/SemanticSimilarityExampleSelector.js";
-export {
-  FewShotPromptTemplate,
-  FewShotPromptTemplateInput,
-} from "./few_shot.js";
-export { loadPrompt } from "./load.js";
+  BaseStringPromptTemplate
+} from './base';
+
+export type {
+  Example,
+  BasePromptTemplateInput,
+  InputValues,
+  PartialValues
+} from './base';
+
+export { PromptTemplate } from './prompt';
+export type { PromptTemplateInput } from './prompt';
+
+export { LengthBasedExampleSelector } from './selectors/LengthBasedExampleSelector';
+export { FewShotPromptTemplate } from './few_shot';
+export type { FewShotPromptTemplateInput } from './few_shot';
+export { loadPrompt } from './load';
 export {
   ChatPromptTemplate,
-  HumanMessagePromptTemplate,
-  AIMessagePromptTemplate,
+  UserMessagePromptTemplate,
+  AssistantMessagePromptTemplate,
   SystemMessagePromptTemplate,
-  ChatMessagePromptTemplate,
-  MessagesPlaceholder,
-} from "./chat.js";
-export {
+  MessagesPlaceholder
+} from './chat';
+export type {
   SerializedPromptTemplate,
   SerializedBasePromptTemplate,
   SerializedFewShotTemplate,
   SerializedMessagePromptTemplate,
-  SerializedChatPromptTemplate,
-} from "./serde.js";
+  SerializedChatPromptTemplate
+} from './serde';

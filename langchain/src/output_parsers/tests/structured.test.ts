@@ -1,15 +1,15 @@
-import { test, expect } from "@jest/globals";
-import { z } from "zod";
+import { test, expect } from '@jest/globals';
+import { z } from 'zod';
 
-import { StructuredOutputParser } from "../structured.js";
+import { StructuredOutputParser } from '../structured';
 
-test("StructuredOutputParser.fromNamesAndDescriptions", () => {
+test('StructuredOutputParser.fromNamesAndDescriptions', () => {
   const parser = StructuredOutputParser.fromNamesAndDescriptions({
-    url: "A link to the resource",
+    url: 'A link to the resource'
   });
 
   expect(parser.parse('```json\n{"url": "value"}```')).toEqual({
-    url: "value",
+    url: 'value'
   });
 
   expect(parser.getFormatInstructions()).toMatchInlineSnapshot(`
@@ -24,13 +24,13 @@ test("StructuredOutputParser.fromNamesAndDescriptions", () => {
   `);
 });
 
-test("StructuredOutputParser.fromZodSchema", () => {
+test('StructuredOutputParser.fromZodSchema', () => {
   const parser = StructuredOutputParser.fromZodSchema(
-    z.object({ url: z.string().describe("A link to the resource") })
+    z.object({ url: z.string().describe('A link to the resource') })
   );
 
   expect(parser.parse('```json\n{"url": "value"}```')).toEqual({
-    url: "value",
+    url: 'value'
   });
 
   expect(parser.getFormatInstructions()).toMatchInlineSnapshot(`
@@ -45,17 +45,17 @@ test("StructuredOutputParser.fromZodSchema", () => {
   `);
 });
 
-test("StructuredOutputParser.fromZodSchema", () => {
+test('StructuredOutputParser.fromZodSchema', () => {
   const parser = StructuredOutputParser.fromZodSchema(
     z.object({
-      url: z.string().describe("A link to the resource"),
-      title: z.string().describe("A title for the resource"),
+      url: z.string().describe('A link to the resource'),
+      title: z.string().describe('A title for the resource'),
       authors: z.array(
         z.object({
-          name: z.string().describe("The name of the author"),
-          email: z.string().describe("The email of the author"),
+          name: z.string().describe('The name of the author'),
+          email: z.string().describe('The email of the author')
         })
-      ),
+      )
     })
   );
 
@@ -64,9 +64,9 @@ test("StructuredOutputParser.fromZodSchema", () => {
       '```json\n{"url": "value", "title": "value", "authors": [{"name": "value", "email": "value"}]}```'
     )
   ).toEqual({
-    url: "value",
-    title: "value",
-    authors: [{ name: "value", email: "value" }],
+    url: 'value',
+    title: 'value',
+    authors: [{ name: 'value', email: 'value' }]
   });
 
   expect(parser.getFormatInstructions()).toMatchInlineSnapshot(`

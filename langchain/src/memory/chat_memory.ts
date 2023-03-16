@@ -1,14 +1,9 @@
 import {
-  HumanChatMessage,
-  AIChatMessage,
-  BaseChatMessage,
-} from "../schema/index.js";
-import {
-  BaseMemory,
-  InputValues,
-  OutputValues,
-  getInputValue,
-} from "./base.js";
+  UserChatMessage,
+  AssistantChatMessage,
+  BaseChatMessage
+} from '../schema/index';
+import { BaseMemory, InputValues, OutputValues, getInputValue } from './base';
 
 export class ChatMessageHistory {
   messages: BaseChatMessage[] = [];
@@ -18,11 +13,11 @@ export class ChatMessageHistory {
   }
 
   addUserMessage(message: string): void {
-    this.messages.push(new HumanChatMessage(message));
+    this.messages.push(new UserChatMessage(message));
   }
 
   addAIChatMessage(message: string): void {
-    this.messages.push(new AIChatMessage(message));
+    this.messages.push(new AssistantChatMessage(message));
   }
 }
 

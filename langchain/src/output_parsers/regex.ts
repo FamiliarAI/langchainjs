@@ -1,5 +1,5 @@
-import { BaseOutputParser } from "./base.js";
-import { SerializedRegexParser } from "./serde.js";
+import { BaseOutputParser } from './base';
+import { SerializedRegexParser } from './serde';
 
 /**
  * Class to parse the output of an LLM call into a dictionary.
@@ -24,7 +24,7 @@ export class RegexParser extends BaseOutputParser {
   }
 
   _type() {
-    return "regex_parser";
+    return 'regex_parser';
   }
 
   parse(text: string): Record<string, string> {
@@ -41,7 +41,7 @@ export class RegexParser extends BaseOutputParser {
     }
 
     return this.outputKeys.reduce((acc, key) => {
-      acc[key] = key === this.defaultOutputKey ? text : "";
+      acc[key] = key === this.defaultOutputKey ? text : '';
       return acc;
     }, {} as Record<string, string>);
   }
@@ -52,10 +52,10 @@ export class RegexParser extends BaseOutputParser {
 
   serialize() {
     return {
-      _type: "regex_parser" as const,
-      regex: typeof this.regex === "string" ? this.regex : this.regex.source,
+      _type: 'regex_parser' as const,
+      regex: typeof this.regex === 'string' ? this.regex : this.regex.source,
       output_keys: this.outputKeys,
-      default_output_key: this.defaultOutputKey,
+      default_output_key: this.defaultOutputKey
     };
   }
 

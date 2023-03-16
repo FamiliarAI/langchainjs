@@ -1,6 +1,6 @@
-import { Example } from "../../schema/index.js";
-import type { BaseExampleSelector } from "../base.js";
-import { PromptTemplate } from "../prompt.js";
+import { Example } from '../../schema/index';
+import type { BaseExampleSelector } from '../base';
+import { PromptTemplate } from '../prompt.js';
 
 function getLengthBased(text: string): number {
   return text.split(/\n| /).length;
@@ -51,7 +51,7 @@ export class LengthBasedExampleSelector implements BaseExampleSelector {
   }
 
   async selectExamples(inputVariables: Example): Promise<Example[]> {
-    const inputs = Object.values(inputVariables).join(" ");
+    const inputs = Object.values(inputVariables).join(' ');
     let remainingLength = this.maxLength - this.getTextLength(inputs);
     let i = 0;
     const examples: Example[] = [];
@@ -75,7 +75,7 @@ export class LengthBasedExampleSelector implements BaseExampleSelector {
     args: LengthBasedExampleSelectorArgs
   ) {
     const selector = new LengthBasedExampleSelector(args);
-    await Promise.all(examples.map((eg) => selector.addExample(eg)));
+    await Promise.all(examples.map(eg => selector.addExample(eg)));
     return selector;
   }
 }

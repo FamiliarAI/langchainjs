@@ -1,7 +1,5 @@
 export interface DocumentParams {
   pageContent: string;
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: Record<string, any>;
 }
 
@@ -9,9 +7,8 @@ export interface DocumentParams {
  * Interface for interacting with a document.
  */
 export class Document implements DocumentParams {
-  pageContent: string;
+  pageContent: string = '';
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   metadata: Record<string, any>;
 
   constructor(fields?: Partial<DocumentParams>) {
